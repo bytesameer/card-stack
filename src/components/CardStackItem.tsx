@@ -14,10 +14,9 @@ const CardStackItem = React.forwardRef<HTMLDivElement, CardStackItemProps>(
     return (
       <div
         ref={ref}
-        className="card-stack-item absolute inset-0 w-full"
-        style={{ zIndex: 10 - index }}
+        className="absolute inset-0 w-full h-full flex items-center justify-center p-8"
       >
-        <Card className="h-full bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700 text-white shadow-2xl hover:shadow-3xl transition-shadow duration-300 group hover:border-purple-500/50">
+        <Card className="w-full max-w-4xl h-[600px] bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700 text-white shadow-2xl">
           <CardHeader className="pb-4">
             <div className="flex justify-between items-start mb-2">
               <Badge variant="outline" className="text-purple-300 border-purple-300">
@@ -30,20 +29,20 @@ const CardStackItem = React.forwardRef<HTMLDivElement, CardStackItemProps>(
                 {card.status}
               </Badge>
             </div>
-            <CardTitle className="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">
+            <CardTitle className="text-4xl font-bold text-white">
               {card.title}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <CardDescription className="text-gray-300 text-lg leading-relaxed">
+            <CardDescription className="text-gray-300 text-xl leading-relaxed">
               {card.description}
             </CardDescription>
             
             {card.achievements && (
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-6">
                 {card.achievements.map((achievement, idx) => (
-                  <div key={idx} className="text-center p-3 bg-gray-800/50 rounded-lg border border-gray-600">
-                    <div className="text-sm font-medium text-purple-300">
+                  <div key={idx} className="text-center p-4 bg-gray-800/50 rounded-lg border border-gray-600">
+                    <div className="text-lg font-medium text-purple-300">
                       {achievement}
                     </div>
                   </div>
@@ -51,10 +50,10 @@ const CardStackItem = React.forwardRef<HTMLDivElement, CardStackItemProps>(
               </div>
             )}
             
-            <div className="flex items-center justify-between pt-4 border-t border-gray-600">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <div className="flex-1 h-px bg-gradient-to-r from-purple-500/20 to-transparent ml-2"></div>
-              <span className="text-xs text-gray-400 ml-2">Project #{card.id}</span>
+            <div className="flex items-center justify-between pt-6 border-t border-gray-600">
+              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+              <div className="flex-1 h-px bg-gradient-to-r from-purple-500/20 to-transparent ml-4"></div>
+              <span className="text-sm text-gray-400 ml-4">Project #{card.id}</span>
             </div>
           </CardContent>
         </Card>
