@@ -13,7 +13,7 @@ interface CardStackProps {
 
 const CardStack: React.FC<CardStackProps> = ({ cards }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -22,46 +22,46 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
     // Clear any existing ScrollTriggers
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
-    // Set initial positions for all cards
-    cardRefs.current.forEach((card, index) => {
+    // Set initial positions - all cards start at bottom except first
+    cardsRef.current.forEach((card, index) => {
       if (card) {
         gsap.set(card, {
           yPercent: index === 0 ? 0 : 100,
-          zIndex: cards.length - index
+          zIndex: cards.length - index,
         });
       }
     });
 
-    // Create scroll animations for each card
-    cardRefs.current.forEach((card, index) => {
-      if (card && index > 0) {
-        const previousCard = cardRefs.current[index - 1];
+    // Create animations for each card transition
+    cardsRef.current.forEach((card, index) => {
+      if (card && index < cards.length - 1) {
+        const nextCard = cardsRef.current[index + 1];
         
-        ScrollTrigger.create({
-          trigger: container,
-          start: `top+=${index * window.innerHeight * 0.8} top`,
-          end: `top+=${(index + 1) * window.innerHeight * 0.8} top`,
-          scrub: 1,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            
-            // Animate current card sliding up
-            gsap.to(card, {
-              yPercent: 100 - (progress * 100),
-              duration: 0.1,
-              ease: "none"
-            });
-            
-            // Animate previous card sliding up and out
-            if (previousCard) {
-              gsap.to(previousCard, {
-                yPercent: -(progress * 100),
+        if (nextCard) {
+          ScrollTrigger.create({
+            trigger: container,
+            start: `top+=${index * window.innerHeight} top`,
+            end: `top+=${(index + 1) * window.innerHeight} top`,
+            scrub: 1,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              
+              // Current card slides up and out
+              gsap.to(card, {
+                yPercent: -100 * progress,
+                duration: 0.1,
+                ease: "none"
+              });
+              
+              // Next card slides up from bottom
+              gsap.to(nextCard, {
+                yPercent: 100 - (100 * progress),
                 duration: 0.1,
                 ease: "none"
               });
             }
-          }
-        });
+          });
+        }
       }
     });
 
@@ -71,7 +71,7 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
   }, [cards.length]);
 
   const setCardRef = (index: number) => (el: HTMLDivElement | null) => {
-    cardRefs.current[index] = el;
+    cardsRef.current[index] = el;
   };
 
   return (
@@ -80,7 +80,7 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
       className="relative"
       style={{ height: `${cards.length * 100}vh` }}
     >
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
         {cards.map((card, index) => (
           <CardStackItem
             key={card.id}
