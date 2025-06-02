@@ -22,63 +22,40 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
     // Clear existing ScrollTriggers
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
-    // Set initial positions
+    // Set initial positions - first card visible, others below and scaled down
     cardsRef.current.forEach((card, index) => {
       if (card) {
         gsap.set(card, {
           scale: index === 0 ? 1 : 0.8,
           y: index === 0 ? 0 : 100,
-          zIndex: cards.length - index,
+          zIndex: index + 1, // Each card has higher z-index than previous
           transformOrigin: "center center"
         });
       }
     });
 
-    // Create animations for each card
+    // Create animations for each card (starting from card 1, not card 0)
     cardsRef.current.forEach((card, index) => {
-      if (!card) return;
+      if (!card || index === 0) return; // Skip first card
 
-      if (index > 0) {
-        // Animation for cards coming in
-        ScrollTrigger.create({
-          trigger: container,
-          start: `top+=${(index - 1) * window.innerHeight * 0.8} top`,
-          end: `top+=${index * window.innerHeight * 0.8} top`,
-          scrub: 1,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            
-            // Current card scales up and moves to center
-            gsap.to(card, {
-              scale: 0.8 + (progress * 0.2),
-              y: 100 - (progress * 100),
-              duration: 0.1,
-              ease: "none"
-            });
-          }
-        });
-      }
-
-      if (index < cards.length - 1) {
-        // Animation for cards going out (being covered)
-        ScrollTrigger.create({
-          trigger: container,
-          start: `top+=${index * window.innerHeight * 0.8} top`,
-          end: `top+=${(index + 1) * window.innerHeight * 0.8} top`,
-          scrub: 1,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            
-            // Previous card scales down and moves slightly up
-            gsap.to(card, {
-              scale: 1 - (progress * 0.1),
-              y: -progress * 30,
-              duration: 0.1,
-              ease: "none"
-            });
-          }
-        });
-      }
+      // Animation for cards coming in
+      ScrollTrigger.create({
+        trigger: container,
+        start: `top+=${(index - 1) * window.innerHeight * 0.8} top`,
+        end: `top+=${index * window.innerHeight * 0.8} top`,
+        scrub: 1,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          
+          // Current card scales up and moves to center position
+          gsap.to(card, {
+            scale: 0.8 + (progress * 0.2), // Scale from 0.8 to 1.0
+            y: 100 - (progress * 100), // Move from y=100 to y=0
+            duration: 0.1,
+            ease: "none"
+          });
+        }
+      });
     });
 
     return () => {
