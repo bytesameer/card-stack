@@ -1,7 +1,5 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Card as CardType } from '@/types/Card';
 
 interface CardStackItemProps {
@@ -14,53 +12,65 @@ const CardStackItem = React.forwardRef<HTMLDivElement, CardStackItemProps>(
     return (
       <div
         ref={ref}
-        className="absolute w-full h-full flex items-center justify-center p-8"
+        className="absolute inset-0 flex items-center justify-center p-8"
         style={{ 
           willChange: 'transform',
-          transform: index === 0 ? 'translateY(0) scale(1)' : 'translateY(100px) scale(0.8)'
+          zIndex: index + 1
         }}
       >
-        <Card className="w-full max-w-4xl h-[600px] bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700 text-white shadow-2xl">
-          <CardHeader className="pb-4">
-            <div className="flex justify-between items-start mb-2">
-              <Badge variant="outline" className="text-purple-300 border-purple-300">
+        <div className="w-full max-w-5xl h-[500px] bg-white rounded-2xl shadow-2xl overflow-hidden flex">
+          {/* Image Section */}
+          <div className="w-1/2 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
+            {card.imageUrl ? (
+              <img 
+                src={card.imageUrl} 
+                alt={card.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="text-white text-6xl font-bold">
+                {card.id}
+              </div>
+            )}
+          </div>
+          
+          {/* Content Section */}
+          <div className="w-1/2 p-8 flex flex-col justify-center">
+            <div className="mb-4">
+              <span className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
                 {card.year}
-              </Badge>
-              <Badge 
-                variant={card.status === 'Active' ? 'default' : 'secondary'}
-                className={card.status === 'Active' ? 'bg-green-600' : 'bg-gray-600'}
-              >
+              </span>
+              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ml-2 ${
+                card.status === 'Active' 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-gray-100 text-gray-800'
+              }`}>
                 {card.status}
-              </Badge>
+              </span>
             </div>
-            <CardTitle className="text-4xl font-bold text-white">
+            
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
               {card.title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <CardDescription className="text-gray-300 text-xl leading-relaxed">
+            </h2>
+            
+            <p className="text-gray-600 text-lg leading-relaxed mb-6">
               {card.description}
-            </CardDescription>
+            </p>
             
             {card.achievements && (
-              <div className="grid grid-cols-3 gap-6">
+              <div className="flex flex-wrap gap-2">
                 {card.achievements.map((achievement, idx) => (
-                  <div key={idx} className="text-center p-4 bg-gray-800/50 rounded-lg border border-gray-600">
-                    <div className="text-lg font-medium text-purple-300">
-                      {achievement}
-                    </div>
-                  </div>
+                  <span 
+                    key={idx}
+                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm"
+                  >
+                    {achievement}
+                  </span>
                 ))}
               </div>
             )}
-            
-            <div className="flex items-center justify-between pt-6 border-t border-gray-600">
-              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-              <div className="flex-1 h-px bg-gradient-to-r from-purple-500/20 to-transparent ml-4"></div>
-              <span className="text-sm text-gray-400 ml-4">Project #{card.id}</span>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
