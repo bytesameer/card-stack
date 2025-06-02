@@ -22,23 +22,26 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
     // Clear existing ScrollTriggers
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
-    // Set initial positions - first card visible, others below and scaled down
+    // Set initial positions
     cardsRef.current.forEach((card, index) => {
       if (card) {
         gsap.set(card, {
-          scale: index === 0 ? 1 : 0.8,
-          y: index === 0 ? 0 : 100,
-          zIndex: index + 1, // Each card has higher z-index than previous
+          scale: 1,
+          y: index === 0 ? 0 : window.innerHeight, // First card at center, others below viewport
+          zIndex: cards.length - index, // Higher index = higher z-index (later cards on top)
           transformOrigin: "center center"
         });
       }
     });
 
-    // Create animations for each card (starting from card 1, not card 0)
+    // Create animations for each card transition
     cardsRef.current.forEach((card, index) => {
       if (!card || index === 0) return; // Skip first card
 
-      // Animation for cards coming in
+      const prevCard = cardsRef.current[index - 1];
+      if (!prevCard) return;
+
+      // Animation for card coming in and previous card going out
       ScrollTrigger.create({
         trigger: container,
         start: `top+=${(index - 1) * window.innerHeight * 0.8} top`,
@@ -47,10 +50,17 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
         onUpdate: (self) => {
           const progress = self.progress;
           
-          // Current card scales up and moves to center position
+          // Current card slides up from bottom
           gsap.to(card, {
-            scale: 0.8 + (progress * 0.2), // Scale from 0.8 to 1.0
-            y: 100 - (progress * 100), // Move from y=100 to y=0
+            y: window.innerHeight - (progress * window.innerHeight), // Move from bottom to center
+            duration: 0.1,
+            ease: "none"
+          });
+
+          // Previous card scales down and moves slightly up
+          gsap.to(prevCard, {
+            scale: 1 - (progress * 0.2), // Scale from 1.0 to 0.8
+            y: -progress * 50, // Move slightly up
             duration: 0.1,
             ease: "none"
           });
@@ -70,10 +80,10 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
   return (
     <div 
       ref={containerRef}
-      className="relative bg-gray-100"
+      className="relative bg-gray-900"
       style={{ height: `${cards.length * 80}vh` }}
     >
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center">
+      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
         {cards.map((card, index) => (
           <CardStackItem
             key={card.id}
