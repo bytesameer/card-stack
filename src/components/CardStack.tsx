@@ -78,21 +78,25 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
   };
 
   return (
-    <div 
-      ref={containerRef}
-      className="relative bg-gray-900"
-      style={{ height: `${cards.length * 80}vh` }}
-    >
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
-        {cards.map((card, index) => (
-          <CardStackItem
-            key={card.id}
-            card={card}
-            index={index}
-            ref={setCardRef(index)}
-          />
-        ))}
+    <div className="bg-gray-900">
+      <div 
+        ref={containerRef}
+        className="relative"
+        style={{ height: `${cards.length * 80}vh` }}
+      >
+        <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+          {cards.map((card, index) => (
+            <CardStackItem
+              key={card.id}
+              card={card}
+              index={index}
+              ref={setCardRef(index)}
+            />
+          ))}
+        </div>
       </div>
+      {/* Extra blank space at bottom for testing scroll */}
+      <div className="h-screen bg-gray-900"></div>
     </div>
   );
 };
