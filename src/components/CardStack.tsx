@@ -28,7 +28,7 @@ const CardStack: React.FC<CardStackProps> = ({ cards }) => {
         gsap.set(card, {
           scale: 1,
           y: index === 0 ? 0 : window.innerHeight, // First card at center, others below viewport
-          zIndex: cards.length - index, // Higher index = higher z-index (later cards on top)
+          zIndex: index + 1, // Later cards have higher z-index (card 2 on top of card 1, etc.)
           transformOrigin: "center center"
         });
       }
